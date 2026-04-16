@@ -3,7 +3,7 @@ name: HomeBoard
 version: "1.0.0"
 slug: homeboard
 description: Household Kanban board with tasks, due dates, and team assignments.
-url: https://github.com/BrandonDoster/homeboard-addon
+url: https://github.com/BrandonDoster/HomeBoard
 arch:
   - aarch64
   - amd64
@@ -11,31 +11,33 @@ arch:
   - armv7
   - i386
 
-# Ingress serves the web UI through HA's reverse proxy — no port mapping needed.
-# The sidebar entry and "Open Web UI" button are enabled automatically.
+# init: false tells the Supervisor we are not using S6 process supervision.
+# Our CMD in the Dockerfile is the only process — no supervisor wrapper needed.
+init: false
+
+# Ingress serves the web UI through HA's reverse proxy.
+# Gives us the sidebar entry and "Open Web UI" button automatically.
+# No port mapping or firewall rules needed — works on LAN and remote alike.
 ingress: true
 ingress_port: 8000
-ingress_stream: false
 panel_icon: mdi:clipboard-check-outline
 panel_title: HomeBoard
 
-# /data is the HA Supervisor's persistent storage location for this add-on.
-# It survives add-on updates and reinstalls. The SQLite file lives here.
+# /data is mounted by the Supervisor as persistent storage for this add-on.
+# Survives updates, reinstalls, and HA restarts.
 map:
   - data
 
-# Options exposed in the add-on configuration panel in HA.
-# Currently none are required — the add-on works out of the box.
+# No user-facing configuration options needed — works out of the box.
 options: {}
 schema: {}
 
-# The add-on does not need host network or privileged access.
+# No host network or privileged access required.
 host_network: false
 privileged: []
 
-# Startup order — 'application' means after HA core has started.
 startup: application
 boot: auto
 
-# HA watchdog will restart the add-on if it crashes.
+# Watchdog polls this lightweight endpoint — restarts the add-on if it goes silent.
 watchdog: http://[HOST]:[PORT:8000]/api/ha/summary

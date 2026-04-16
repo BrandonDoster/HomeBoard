@@ -1,8 +1,8 @@
 import os
 import sqlite3
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from pydantic import BaseModel
 from typing import Optional, List
 import uvicorn
@@ -360,13 +360,38 @@ def ha_summary():
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
+def _serve_index(ingress_path: str = "") -> HTMLResponse:
+    """
+    Read index.html and inject a <base> tag pointing at the ingress path.
+
+    When running behind HA ingress the Supervisor proxies requests through a
+    path like /api/hassio_ingress/<TOKEN>/. Without a <base> tag the browser
+    resolves relative URLs (static/style.css, api/tasks) against the HA root
+    instead of the add-on root, so CSS/JS never load and every API call 404s.
+
+    The base href must end with a trailing slash for relative paths to resolve
+    correctly. Outside ingress (direct LAN access, local dev) ingress_path is
+    empty and the base tag becomes <base href="/"> which is harmless.
+    """
+    with open("static/index.html", "r") as f:
+        html = f.read()
+
+    base_href = (ingress_path.rstrip("/") + "/") if ingress_path else "/"
+    base_tag = f'<base href="{base_href}">'
+    html = html.replace("</head>", f"  {base_tag}\n</head>", 1)
+    return HTMLResponse(html)
+
+
 @app.get("/")
-def root():
-    return FileResponse("static/index.html")
+def root(request: Request) -> HTMLResponse:
+    ingress_path = request.headers.get("X-Ingress-Path", "")
+    return _serve_index(ingress_path)
+
 
 @app.get("/{path:path}")
-def spa_fallback(path: str):
-    return FileResponse("static/index.html")
+def spa_fallback(path: str, request: Request) -> HTMLResponse:
+    ingress_path = request.headers.get("X-Ingress-Path", "")
+    return _serve_index(ingress_path)
 
 
 # ── Entry point ──────────────────────────────────────────────────────────────

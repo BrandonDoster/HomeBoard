@@ -16,7 +16,7 @@ const state = {
 async function apiFetch(method, path, body) {
   const opts = { method, headers: { 'Content-Type': 'application/json' } };
   if (body !== undefined) opts.body = JSON.stringify(body);
-  const res = await fetch('/api' + path, opts);
+  const res = await fetch('api' + path, opts);
   if (!res.ok) {
     const txt = await res.text().catch(() => res.statusText);
     throw new Error(`${method} ${path} → ${res.status}: ${txt}`);

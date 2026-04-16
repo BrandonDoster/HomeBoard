@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HomeBoard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;1,400;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── Header ─────────────────────────────────────────────── -->
+  <header>
+    <div class="brand">
+      <span class="brand-icon">⌂</span>
+      <span class="brand-name">HomeBoard</span>
+    </div>
+    <nav class="tab-nav" role="tablist">
+      <button class="tab-btn active" data-tab="kanban"   role="tab">Board</button>
+      <button class="tab-btn"        data-tab="shopping" role="tab">Shopping</button>
+      <button class="tab-btn"        data-tab="settings" role="tab">Settings</button>
+    </nav>
+  </header>
+
+  <!-- ── Kanban Tab ──────────────────────────────────────────── -->
+  <section id="tab-kanban" class="tab-pane active" role="tabpanel">
+    <div class="board-toolbar">
+      <button id="add-task-btn" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Add Task
+      </button>
+    </div>
+
+    <div class="board">
+
+      <div class="column" id="col-todo">
+        <div class="col-header">
+          <span class="col-pip pip-todo"></span>
+          <h2>To Do</h2>
+          <span class="col-count" id="cnt-todo">0</span>
+        </div>
+        <div class="card-list" id="list-todo" data-status="todo"></div>
+      </div>
+
+      <div class="column" id="col-inprogress">
+        <div class="col-header">
+          <span class="col-pip pip-inprogress"></span>
+          <h2>In Progress</h2>
+          <span class="col-count" id="cnt-inprogress">0</span>
+        </div>
+        <div class="card-list" id="list-inprogress" data-status="inprogress"></div>
+      </div>
+
+      <div class="column" id="col-done">
+        <div class="col-header">
+          <span class="col-pip pip-done"></span>
+          <h2>Done</h2>
+          <span class="col-count" id="cnt-done">0</span>
+        </div>
+        <div class="card-list" id="list-done" data-status="done"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Shopping Tab (placeholder) ─────────────────────────── -->
+  <section id="tab-shopping" class="tab-pane" role="tabpanel">
+    <div class="placeholder">
+      <div class="placeholder-emoji">🛒</div>
+      <h2>Shopping List</h2>
+      <p>Shared shopping lists for the household — coming soon.</p>
+    </div>
+  </section>
+
+  <!-- ── Settings Tab ────────────────────────────────────────── -->
+  <section id="tab-settings" class="tab-pane" role="tabpanel">
+    <div class="settings-wrap">
+      <div class="settings-card">
+        <h2>Team Members</h2>
+        <p class="settings-sub">These names appear as assignment options on every task.</p>
+        <div id="user-list"></div>
+        <div class="add-user-row">
+          <input id="new-user-input" type="text" placeholder="Add a person…" maxlength="40" autocomplete="off" />
+          <button id="add-user-btn" class="btn btn-primary">Add</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- #app -->
+
+<!-- ── Task Modal ──────────────────────────────────────────────── -->
+<div id="modal-overlay" class="modal-overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-heading">
+
+    <div class="modal-head">
+      <h3 id="modal-heading">New Task</h3>
+      <button class="modal-close-btn" id="modal-close" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="field-group">
+        <label for="f-title">Title</label>
+        <input id="f-title" type="text" placeholder="What needs to be done?" maxlength="120" autocomplete="off" />
+      </div>
+      <div class="field-group">
+        <label for="f-due">Due Date</label>
+        <input id="f-due" type="date" />
+      </div>
+      <div class="field-group">
+        <label>Assigned To</label>
+        <div id="f-assignees" class="assignees-grid"></div>
+      </div>
+      <div class="field-group">
+        <label for="f-notes">Notes</label>
+        <textarea id="f-notes" placeholder="Any details or context…" rows="4"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-foot">
+      <button id="task-delete-btn" class="btn btn-danger hidden">Delete task</button>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="btn btn-ghost">Cancel</button>
+        <button id="task-save-btn" class="btn btn-primary">Save</button>
+      </div>
+    </div>
+
+  </div>
+</div><!-- modal-overlay -->
+
+<script src="/static/app.js"></script>
+</body>
+</html>
